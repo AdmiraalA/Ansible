@@ -1,0 +1,16 @@
+- name: CloudFlare DNS update
+  hosts: localhost
+  tasks:
+  - name: Add/Update DNS entry into Evilness DNS Zone
+    community.general.cloudflare_dns:
+      zone: evilness.nl
+      type: CNAME
+      name: "{{item.name}}"
+      value: "{{item.value}}"
+      proxied: false
+      api_token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+      state: present
+    with_items:
+      - { name: "a.b.c", value: "d-xxxxxx.execute-api.us-east-1.amazonaws.com" }
+      - { name: "d.b.c", value: "d-xxxxx.execute-api.us-east-1.amazonaws.com" }
+      - { name: "c.b.d", value: "d-xxxxxx.execute-api.us-east-1.amazonaws.com" }
