@@ -18,14 +18,13 @@
           - zabbix-proxy64
           - Service_Watchdog
         state: present
-
+    
     - name: Add firewall rule for OpenVPN on pfSense
       when: ansible_facts['os_family'] == 'FreeBSD' and ansible_distribution == 'pfSense'
-      pfsense.core.pfsense_rule:
+      pfsensible.core.pfsense_rule:
         name: 'Allow OpenVPN traffic'
         action: pass
         interface: wan
         ipprotocol: any
         protocol: any
         state: present
-
