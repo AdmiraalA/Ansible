@@ -7,9 +7,10 @@
     ansible_python_interpreter: /usr/local/bin/python3.11  # Adjust the path as needed
   
   tasks:
+
 - name: Create DHCP static mapping
   pfsense_dhcp_static:
-    name: "test"
-    macaddr: "aa:bb:cc:dd:ee:ff"
-    ipaddr: "192.168.1.188"
-    state: present
+  name: "test"
+  macaddr: "aa:bb:cc:dd:ee:ff"
+  ipaddr: "192.168.1.188"
+  state: present
