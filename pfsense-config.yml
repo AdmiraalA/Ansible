@@ -27,7 +27,7 @@
         name: 'Allow OpenVPN traffic'
         action: pass
         interface: wan
-        ipprotocol: any
+        ipprotocol: inet46
         protocol: any
         state: present
 
@@ -37,6 +37,6 @@
         name: 'Allow OpenVPN traffic'
         action: pass
         interface: opt1
-        ipprotocol: any
+        ipprotocol: inet46
         protocol: any
         state: present
