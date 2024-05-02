@@ -1,20 +1,20 @@
 ---
-- name: "Configure Pfsense DHCP Static Mappings"
-  become: yes
-  hosts: all
-
-  vars:
-    ansible_python_interpreter: /usr/local/bin/python3.11  # Adjust the path as needed
+- name: Configure DHCP Static Mappings
+  hosts: localhost
+  connection: local
+  gather_facts: no
   
   tasks:
-    - name: Create DHCP static mapping
+    - name: Create or edit DHCP static mapping
       pfsensible.core.pfsense_dhcp_static:
         name: "{{ mapping_name }}"
         macaddr: "{{ mac_address }}"
         ipaddr: "{{ ip_address }}"
-        state: present
-      when: mapping_state == 'present'
-
+        state: "{{ mapping_state }}"
+      when: 
+        - mapping_state == 'present'  # Adding a new entry
+        - edit is not defined         # Editing an existing entry
+      
     - name: Delete DHCP static mapping
       pfsensible.core.pfsense_dhcp_static:
         name: "{{ mapping_name }}"
