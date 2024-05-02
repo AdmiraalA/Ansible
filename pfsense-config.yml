@@ -1,16 +1,16 @@
 ---
 - name: "Configure Pfsense"
   become: yes
-  hosts: ip.router.snap.je
+ # hosts: ip.router.snap.je
 
-tasks:
-  - name: Update packages on FreeBSD
+  tasks:
+    - name: Update packages on FreeBSD
       when: ansible_facts['os_family'] == 'FreeBSD'
       pkgng:
         name: '*'
         state: latest
 
-  - name: Install required packages on FreeBSD
+    - name: Install required packages on FreeBSD
       when: ansible_facts['os_family'] == 'FreeBSD'
       pkgng:
         name:
@@ -19,7 +19,7 @@ tasks:
           - Service_Watchdog
         state: present
 
-  - name: Add firewall rule for OpenVPN on pfSense
+    - name: Add firewall rule for OpenVPN on pfSense
       when: ansible_facts['os_family'] == 'FreeBSD' and ansible_distribution == 'pfSense'
       pfsense.core.pfsense_rule:
         name: 'Allow OpenVPN traffic'
@@ -28,3 +28,4 @@ tasks:
         ipprotocol: any
         protocol: any
         state: present
+
