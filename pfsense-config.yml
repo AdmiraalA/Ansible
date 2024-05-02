@@ -29,6 +29,8 @@
         interface: wan
         ipprotocol: inet46
         protocol: any
+        source: any
+        destination: any
         state: present
 
      
@@ -39,4 +41,6 @@
         interface: opt1
         ipprotocol: inet46
         protocol: any
+        source: any
+        destination: any
         state: present
