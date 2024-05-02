@@ -2,9 +2,7 @@
 - name: "Configure Pfsense"
   become: yes
   hosts: all
-  vars:
-ansible_host_key_checking: false
-
+  
   tasks:
     - name: Update packages on FreeBSD
       when: ansible_facts['os_family'] == 'FreeBSD'
