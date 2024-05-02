@@ -8,7 +8,7 @@
   
   tasks:
     - name: Create DHCP static mapping
-      pfsensible.core.pfsense_dhcp_static:
+      pfsense_dhcp_static:
         name: "test"
         macaddr: "aa:bb:cc:dd:ee:ff"
         ipaddr: "192.168.1.188"
