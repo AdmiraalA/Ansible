@@ -40,7 +40,9 @@
         interface: wan
         ipprotocol: inet
         protocol: udp
-        destination_port: 1194
+        source: any
+        destination: any
+        destination_port: '1194'  # Port number as a string
         state: present
 
     - name: Add firewall rule to open UDP port 1194 on LAN interface
@@ -50,7 +52,9 @@
         interface: lan
         ipprotocol: inet
         protocol: udp
-        destination_port: 1194
+        source: any
+        destination: any
+        destination_port: '1194'  # Port number as a string
         state: present
 
     - name: Add firewall rule to open UDP port 1194 on WireGuard interface
@@ -60,5 +64,7 @@
         interface: wireguard
         ipprotocol: inet
         protocol: udp
-        destination_port: 1194
-        state: present   
+        source: any
+        destination: any
+        destination_port: '1194'  # Port number as a string
+        state: present
