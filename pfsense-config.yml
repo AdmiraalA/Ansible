@@ -33,14 +33,32 @@
         destination: any
         state: present
 
-     
-    - name: Add firewall rule for opt1 on pfSense
+    - name: Add firewall rule to open UDP port 1194 on WAN interface
       pfsensible.core.pfsense_rule:
-        name: 'Allow OpenVPN traffic'
+        name: 'Allow UDP 1194 on WAN'
         action: pass
-        interface: opt1
-        ipprotocol: inet46
-        protocol: any
-        source: any
-        destination: any
+        interface: wan
+        ipprotocol: inet
+        protocol: udp
+        destination_port: 1194
         state: present
+
+    - name: Add firewall rule to open UDP port 1194 on LAN interface
+      pfsensible.core.pfsense_rule:
+        name: 'Allow UDP 1194 on LAN'
+        action: pass
+        interface: lan
+        ipprotocol: inet
+        protocol: udp
+        destination_port: 1194
+        state: present
+
+    - name: Add firewall rule to open UDP port 1194 on WireGuard interface
+      pfsensible.core.pfsense_rule:
+        name: 'Allow UDP 1194 on WireGuard'
+        action: pass
+        interface: wireguard
+        ipprotocol: inet
+        protocol: udp
+        destination_port: 1194
+        state: present   
