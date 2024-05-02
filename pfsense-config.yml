@@ -17,9 +17,9 @@
       when: ansible_facts['os_family'] == 'FreeBSD'
       pkgng:
         name:
-          - zabbix-agent6
-          - zabbix-proxy6
-          - Service_Watchdog
+          - pfSense-pkg-zabbix-agent64
+          - pfSense-pkg-zabbix-proxy64
+          - pfSense-pkg-Service_Watchdog
         state: present
     
     - name: Add firewall rule for OpenVPN on pfSense
