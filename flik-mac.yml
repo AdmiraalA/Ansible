@@ -2,3 +2,8 @@
 - name: "Configure Pfsense"
   become: yes
   hosts: all
+
+  vars:
+    ansible_python_interpreter: /usr/local/bin/python3.11  # Adjust the path as needed
+  
+  tasks:
