@@ -17,8 +17,8 @@
       when: ansible_facts['os_family'] == 'FreeBSD'
       pkgng:
         name:
-          - zabbix-agent64
-          - zabbix-proxy64
+          - zabbix-agent6
+          - zabbix-proxy6
           - Service_Watchdog
         state: present
     
