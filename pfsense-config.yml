@@ -1,6 +1,7 @@
 ---
 - name: "Configure Pfsense"
   become: yes
+  hosts: ip.router.snap.je
 
 tasks:
   - name: Update packages on FreeBSD
