@@ -1,5 +1,5 @@
 ---
-- name: "Configure Pfsense"
+- name: "Configure Pfsense DHCP Static Mappings"
   become: yes
   hosts: all
 
@@ -9,8 +9,14 @@
   tasks:
     - name: Create DHCP static mapping
       pfsensible.core.pfsense_dhcp_static:
-        name: "test"
-        macaddr: "aa:bb:cc:dd:ee:ff"
-        ipaddr: "192.168.1.188"
-        #hostname: 
+        name: "{{ mapping_name }}"
+        macaddr: "{{ mac_address }}"
+        ipaddr: "{{ ip_address }}"
         state: present
+      when: mapping_state == 'present'
+
+    - name: Delete DHCP static mapping
+      pfsensible.core.pfsense_dhcp_static:
+        name: "{{ mapping_name }}"
+        state: absent
+      when: mapping_state == 'absent'
