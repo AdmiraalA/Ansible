@@ -31,3 +31,14 @@
         ipprotocol: any
         protocol: any
         state: present
+
+     
+    - name: Add firewall rule for opt1 on pfSense
+      when: ansible_facts['os_family'] == 'FreeBSD' and ansible_distribution == 'pfSense'
+      pfsensible.core.pfsense_rule:
+        name: 'Allow OpenVPN traffic'
+        action: pass
+        interface: opt1
+        ipprotocol: any
+        protocol: any
+        state: present
