@@ -1,19 +1,34 @@
 ---
-- name: Update and restart services on Linux boxes
+- name: Update and restart services on Linux and FreeBSD boxes
   hosts: all
   become: yes
 
   tasks:
-    - name: Update packages on Red Hat-based systems
-      when: ansible_facts['os_family'] == 'RedHat' or ansible_facts['os_family'] == 'AlmaLinux' or ansible_facts['os_family'] == 'Rocky Linux'
+    - name: Update packages on Red Hat-alike systems
+      when: ansible_facts['os_family'] == 'RedHat' or ansible_facts['os_family'] == 'AlmaLinux' or ansible_facts['os_family'] == 'Rocky Linux' or ansible_facts['os_family'] == 'Oracle Linux'
       dnf:
         name: '*'
         state: latest
 
     - name: Update packages on Debian/Ubuntu-based systems
-      when: ansible_facts['os_family'] == 'Debian' ansible_facts['os_family'] == 'Ubuntu'
+      when: ansible_facts['os_family'] == 'Debian' or ansible_facts['os_family'] == 'Ubuntu'
       apt:
         upgrade: dist
         update_cache: yes
         autoremove: yes
         autoclean: yes
+
+    - name: Update packages on FreeBSD
+      when: ansible_facts['os_family'] == 'FreeBSD'
+      pkgng:
+        name: '*'
+        state: latest
+
+    - name: Install multiple packages on FreeBSD
+      when: ansible_facts['os_family'] == 'FreeBSD'
+      pkgng:
+        name:
+          - Service_Watchdog
+          - zabbix-agent64
+          - zabbix-proxy64
+        state: present
