@@ -3,6 +3,9 @@
   become: yes
   hosts: all
   
+  vars:
+    ansible_python_interpreter: /usr/local/bin/python3.11  # Adjust the path as needed
+  
   tasks:
     - name: Update packages on FreeBSD
       when: ansible_facts['os_family'] == 'FreeBSD'
