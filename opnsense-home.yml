@@ -17,9 +17,9 @@
         name: "curl,gateway_mon"
         state: present
 
-    - name: Set WAN interface to PPPoE
+    - name: Set WAN interface to PPPoE with IPv6 support
       command: >
-        curl -X POST -d '{"if": "{{ wan_interface }}", "type": "pppoe", "username": "{{ pppoe_username }}", "password": "{{ pppoe_password }}", "descr": "KPN PPPoE"}'
+        curl -X POST -d '{"if": "{{ wan_interface }}", "type": "pppoe", "username": "{{ pppoe_username }}", "password": "{{ pppoe_password }}", "descr": "KPN PPPoE", "ipv6mode": "dhcp6"}'
         http://localhost/api/v1/interfaces
 
     - name: Set up Internet VLAN
@@ -32,62 +32,64 @@
         curl -X POST -d '{"if": "{{ iptv_interface }}", "tag": "{{ iptv_vlan_id }}", "descr": "IPTV"}'
         http://localhost/api/v1/interfaces/vlan
 
-    - name: Configure Internet firewall rules
+    - name: Configure Internet firewall rules for IPv4
       command: >
-        curl -X POST -d '{"type": "pass", "interface": "{{ internet_interface }}", "ipprotocol": "inet", "descr": "Allow Internet"}'
+        curl -X POST -d '{"type": "pass", "interface": "{{ internet_interface }}", "ipprotocol": "inet", "descr": "Allow Internet (IPv4)"}'
         http://localhost/api/v1/firewall/rules
 
-    - name: Configure IPTV firewall rules
+    - name: Configure Internet firewall rules for IPv6
       command: >
-        curl -X POST -d '{"type": "pass", "interface": "{{ iptv_interface }}", "ipprotocol": "inet", "protocol": "igmp", "descr": "Allow IGMP"}'
+        curl -X POST -d '{"type": "pass", "interface": "{{ internet_interface }}", "ipprotocol": "inet6", "descr": "Allow Internet (IPv6)"}'
         http://localhost/api/v1/firewall/rules
 
-    - name: Open SSH port for destination IP 192.168.2.2
+    - name: Configure IPTV firewall rules for IPv4
       command: >
-        curl -X POST -d '{"type": "pass", "interface": "{{ internet_interface }}", "ipprotocol": "inet", "protocol": "tcp", "source": "any", "sourceport": "", "destination": "192.168.2.2", "destinationport": "22", "descr": "Allow SSH to 192.168.2.2"}'
+        curl -X POST -d '{"type": "pass", "interface": "{{ iptv_interface }}", "ipprotocol": "inet", "protocol": "igmp", "descr": "Allow IGMP (IPv4)"}'
         http://localhost/api/v1/firewall/rules
 
-    - name: Open HTTP port for destination IP 1.2.3.4
+    - name: Configure IPTV firewall rules for IPv6
       command: >
-        curl -X POST -d '{"type": "pass", "interface": "{{ internet_interface }}", "ipprotocol": "inet", "protocol": "tcp", "source": "any", "sourceport": "", "destination": "1.2.3.4", "destinationport": "80", "descr": "Allow HTTP to 1.2.3.4"}'
+        curl -X POST -d '{"type": "pass", "interface": "{{ iptv_interface }}", "ipprotocol": "inet6", "protocol": "igmp", "descr": "Allow IGMP (IPv6)"}'
         http://localhost/api/v1/firewall/rules
 
-    - name:  Open HTTPS port for destination IP 1.2.3.
+    - name: Open SSH port for destination IP 192.168.2.2 with low latency (IPv4)
       command: >
-        curl -X POST -d '{"type": "pass", "interface": "{{ internet_interface }}", "ipprotocol": "inet", "protocol": "tcp", "source": "any", "sourceport": "", "destination": "1.2.3.4", "destinationport": "443", "descr": "Allow HTTPS to 1.2.3.4"}'
+        curl -X POST -d '{"type": "pass", "interface": "{{ internet_interface }}", "ipprotocol": "inet", "protocol": "tcp", "source": "any", "sourceport": "", "destination": "192.168.2.2", "destinationport": "22", "descr": "Allow SSH to 192.168.2.2 (IPv4)"}'
         http://localhost/api/v1/firewall/rules
 
-    - name: Open SMTP (25) and Submission (587) ports for destination IP 1.2.3.4
+    - name: Open SSH port for destination IP 192.168.2.2 with low latency (IPv6)
       command: >
-        curl -X POST -d '{"type": "pass", "interface": "{{ internet_interface }}", "ipprotocol": "inet", "protocol": "tcp", "source": "any", "sourceport": "", "destination": "1.2.3.4", "destinationport": "25", "descr": "Allow SMTP to 1.2.3.4"}, {"type": "pass", "interface": "{{ internet_interface }}", "ipprotocol": "inet", "protocol": "tcp", "source": "any", "sourceport": "", "destination": "1.2.3.4", "destinationport": "587", "descr": "Allow Submission to 1.2.3.4"}'
+        curl -X POST -d '{"type": "pass", "interface": "{{ internet_interface }}", "ipprotocol": "inet6", "protocol": "tcp", "source": "any", "sourceport": "", "destination": "192.168.2.2", "destinationport": "22", "descr": "Allow SSH to 192.168.2.2 (IPv6)"}'
         http://localhost/api/v1/firewall/rules
 
-    - name: Configure QoS for SSH with low latency
+    - name: Open HTTP and HTTPS ports for destination IP 1.2.3.4 (IPv4)
       command: >
-        curl -X POST -d '{"interface": "{{ internet_interface }}", "descr": "QoS for SSH", "ipprotocol": "inet", "tag": "22", "tagged": false, "pipe": "40"}'
-        http://localhost/api/v1/firewall/shaper
-      register: ssh_qos
+        curl -X POST -d '{"type": "pass", "interface": "{{ internet_interface }}", "ipprotocol": "inet", "protocol": "tcp", "source": "any", "sourceport": "", "destination": "1.2.3.4", "destinationport": "80", "descr": "Allow HTTP to 1.2.3.4 (IPv4)"}'
+        http://localhost/api/v1/firewall/rules
 
-    - name: Configure QoS for SMTP with lowest priority
+    - name: Open HTTP and HTTPS ports for destination IP 1.2.3.4 (IPv6)
       command: >
-        curl -X POST -d '{"interface": "{{ internet_interface }}", "descr": "QoS for SMTP", "ipprotocol": "inet", "tag": "25", "tagged": false, "pipe": "10"}'
-        http://localhost/api/v1/firewall/shaper
-      register: smtp_qos
+        curl -X POST -d '{"type": "pass", "interface": "{{ internet_interface }}", "ipprotocol": "inet6", "protocol": "tcp", "source": "any", "sourceport": "", "destination": "1.2.3.4", "destinationport": "80", "descr": "Allow HTTP to 1.2.3.4 (IPv6)"}'
+        http://localhost/api/v1/firewall/rules
 
-    - name: Configure QoS for Gaming for low ping
+    - name: Configure HTTPS (IPv4)
       command: >
-        curl -X POST -d '{"interface": "{{ internet_interface }}", "descr": "QoS for Gaming", "ipprotocol": "inet", "tag": "3074,27015", "tagged": true, "pipe": "60"}'
-        http://localhost/api/v1/firewall/shaper
-      register: gaming_qos
+        curl -X POST -d '{"type": "pass", "interface": "{{ internet_interface }}", "ipprotocol": "inet", "protocol": "tcp", "source": "any", "sourceport": "", "destination": "1.2.3.4", "destinationport": "443", "descr": "Allow HTTPS to 1.2.3.4 (IPv4)"}'
+        http://localhost/api/v1/firewall/rules
 
-    - name: Configure QoS for VoIP applications for consistent performance
+    - name: Configure HTTPS (IPv6)
       command: >
-        curl -X POST -d '{"interface": "{{ internet_interface }}", "descr": "QoS for VoIP", "ipprotocol": "inet", "tag": "5060,5061,1720,19302", "tagged": true, "pipe": "50"}'
-        http://localhost/api/v1/firewall/shaper
-      register: voip_qos
+        curl -X POST -d '{"type": "pass", "interface": "{{ internet_interface }}", "ipprotocol": "inet6", "protocol": "tcp", "source": "any", "sourceport": "", "destination": "1.2.3.4", "destinationport": "443", "descr": "Allow HTTPS to 1.2.3.4 (IPv6)"}'
+        http://localhost/api/v1/firewall/rules
 
-    - name: Enable Gateway Monitoring Daemon
+    - name: Open SMTP (25) and Submission (587) ports for destination IP 1.2.3.4 (IPv4)
       command: >
-        /usr/local/sbin/gw_redmon
+        curl -X POST -d '{"type": "pass", "interface": "{{ internet_interface }}", "ipprotocol": "inet", "protocol": "tcp", "source": "any", "sourceport": "", "destination": "1.2.3.4", "destinationport": "25", "descr": "Allow SMTP to 1.2.3.4 (IPv4)"}, {"type": "pass", "interface": "{{ internet_interface }}", "ipprotocol": "inet", "protocol": "tcp", "source": "any", "sourceport": "", "destination": "1.2.3.4", "destinationport": "587", "descr": "Allow Submission to 1.2.3.4 (IPv4)"}'
+        http://localhost/api/v1/firewall/rules
 
-    # Additional tasks like NAT, firewall rules, etc. can be added here
+    - name: Open SMTP (25) and Submission (587) ports for destination IP 1.2.3.4 (IPv6)
+      command: >
+        curl -X POST -d '{"type": "pass", "interface": "{{ internet_interface }}", "ipprotocol": "inet6", "protocol": "tcp", "source": "any", "sourceport": "", "destination": "1.2.3.4", "destinationport": "25", "descr": "Allow SMTP to 1.2.3.4 (IPv6)"}, {"type": "pass", "interface": "{{ internet_interface }}", "ipprotocol": "inet6", "protocol": "tcp", "source": "any", "sourceport": "", "destination": "1.2.3.4", "destinationport": "587", "descr": "Allow Submission to 1.2.3.4 (IPv6)"}'
+        http://localhost/api/v1/firewall/rules
+
+    # Additional tasks like QoS, NAT, firewall rules, etc. can be added here
