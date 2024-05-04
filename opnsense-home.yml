@@ -42,5 +42,24 @@
         curl -X POST -d '{"type": "pass", "interface": "{{ iptv_interface }}", "ipprotocol": "inet", "protocol": "igmp", "descr": "Allow IGMP"}'
         http://localhost/api/v1/firewall/rules
 
-    # Additional tasks like NAT, firewall rules, etc. can be added here
+    - name: Open SSH port for destination IP 192.168.2.2
+      command: >
+        curl -X POST -d '{"type": "pass", "interface": "{{ internet_interface }}", "ipprotocol": "inet", "protocol": "tcp", "source": "any", "sourceport": "", "destination": "192.168.2.2", "destinationport": "22", "descr": "Allow SSH to 192.168.2.2"}'
+        http://localhost/api/v1/firewall/rules
 
+    - name: Open HTTP and HTTPS ports for destination IP 1.2.3.4
+      command: >
+        curl -X POST -d '{"type": "pass", "interface": "{{ internet_interface }}", "ipprotocol": "inet", "protocol": "tcp", "source": "any", "sourceport": "", "destination": "1.2.3.4", "destinationport": "80", "descr": "Allow HTTP to 1.2.3.4"}'
+        http://localhost/api/v1/firewall/rules
+
+    - name: Configure HTTPS
+      command: >
+        curl -X POST -d '{"type": "pass", "interface": "{{ internet_interface }}", "ipprotocol": "inet", "protocol": "tcp", "source": "any", "sourceport": "", "destination": "1.2.3.4", "destinationport": "443", "descr": "Allow HTTPS to 1.2.3.4"}'
+        http://localhost/api/v1/firewall/rules
+
+    - name: Open SMTP (25) and Submission (587) ports for destination IP 1.2.3.4
+      command: >
+        curl -X POST -d '{"type": "pass", "interface": "{{ internet_interface }}", "ipprotocol": "inet", "protocol": "tcp", "source": "any", "sourceport": "", "destination": "1.2.3.4", "destinationport": "25", "descr": "Allow SMTP to 1.2.3.4"}, {"type": "pass", "interface": "{{ internet_interface }}", "ipprotocol": "inet", "protocol": "tcp", "source": "any", "sourceport": "", "destination": "1.2.3.4", "destinationport": "587", "descr": "Allow Submission to 1.2.3.4"}'
+        http://localhost/api/v1/firewall/rules
+
+    # Additional tasks like NAT, firewall rules, etc. can be added here
