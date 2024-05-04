@@ -25,7 +25,7 @@
 
     - name: Install required packages
       pkg:
-        name: "curl,strongswan"
+        name: "curl,strongswan,zabbix-proxy64"
         state: present
 
     - name: Set WAN interface to PPPoE with IPv6 support
