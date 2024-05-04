@@ -1,0 +1,15 @@
+---
+- hosts: all
+  become: true
+  remote_user: ansible
+
+  tasks:
+    - name: Populate service facts
+      service_facts:
+
+    - name: "ensure rpcbind service is stopped and disabled"
+      ansible.builtin.service:
+        name: rpcbind
+        enabled: false
+        state: "stopped"
+      when: "'rpcbind' in services"
