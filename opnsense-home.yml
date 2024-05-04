@@ -18,6 +18,11 @@
     api_password: "your_api_password"
 
   tasks:
+    - name: Set hostname
+      command: >
+        curl -u "{{ api_username }}:{{ api_password }}" -X POST -d '{"hostname": "pfsense.evilness.nl"}'
+        http://localhost/api/v1/system/hostname
+
     - name: Install required packages
       pkg:
         name: "curl,strongswan"
@@ -75,11 +80,6 @@
         curl -X POST -d '{"type": "pass", "interface": "{{ internet_interface }}", "ipprotocol": "inet", "protocol": "tcp", "source": "any", "sourceport": "", "destination": "1.2.3.4", "destinationport": "25", "descr": "Allow SMTP to 1.2.3.4"}, {"type": "pass", "interface": "{{ internet_interface }}", "ipprotocol": "inet", "protocol": "tcp", "source": "any", "sourceport": "", "destination": "1.2.3.4", "destinationport": "587", "descr": "Allow Submission to 1.2.3.4"}'
         http://localhost/api/v1/firewall/rules
 
-    - name: Configure QoS for SSH with low latency
-      command: >
-        curl -X POST -d '{"interface": "{{ internet_interface }}", "descr": "QoS for SSH", "ipprotocol": "inet", "tag": "22", "tagged": false, "pipe": "40"}'
-        http://localhost/api/v1/firewall/shaper
-
     - name: Configure QoS for Gaming for low ping
       command: >
         curl -X POST -d '{"interface": "{{ internet_interface }}", "descr": "QoS for Gaming", "ipprotocol": "inet", "tag": "3074,27015", "tagged": true, "pipe": "60"}'
@@ -89,6 +89,11 @@
       command: >
         curl -X POST -d '{"interface": "{{ internet_interface }}", "descr": "QoS for VoIP", "ipprotocol": "inet", "tag": "5060,5061,1720,19302", "tagged": true, "pipe": "50"}'
         http://localhost/api/v1/firewall/shaper
+
+    - name: Enable Let's Encrypt with automatic renewal
+      command: >
+        curl -u "{{ api_username }}:{{ api_password }}" -X POST -d '{"service": "acme", "action": "enable", "parameters": {"renew_days": "30", "email": "your_email@example.com", "agree_tos": "yes", "provider": "letsencrypt", "cert_name": "pfsense.evilness.nl"}}'
+        http://localhost/api/v1/services
 
     - name: Configure IPsec VPN
       command: >
