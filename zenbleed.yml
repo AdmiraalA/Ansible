@@ -1,0 +1,52 @@
+---
+- name: Check for vulnerabilities and apply mitigation if necessary
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Check CPU architecture
+      ansible.builtin.set_fact:
+        is_amd_zen: "{{ ansible_processor is search('AMD Zen') }}"
+
+    - name: Download the script
+      ansible.builtin.get_url:
+        url: "https://raw.githubusercontent.com/speed47/spectre-meltdown-checker/master/spectre-meltdown-checker.sh"
+        dest: "/tmp/spectre-meltdown-checker.sh"
+        mode: "u+x"
+      when: is_amd_zen
+
+    - name: Run the script and capture the output
+      ansible.builtin.command: "/tmp/spectre-meltdown-checker.sh --variant zenbleed --explain"
+      register: spectre_output
+      ignore_errors: true
+      when: is_amd_zen
+
+    - name: Exit if CPU is not AMD Zen
+      ansible.builtin.fail:
+        msg: "CPU architecture is not AMD Zen. No further action needed."
+      when: 
+        - "not is_amd_zen"
+
+    - name: Exit if not vulnerable
+      ansible.builtin.fail:
+        msg: "System is not vulnerable. No further action needed."
+      when: 
+        - "'VULNERABLE' not in spectre_output.stdout_lines"
+        - is_amd_zen
+
+    - name: Install msr-tools package
+      ansible.builtin.package:
+        name: msr-tools
+        state: present
+      when: is_amd_zen
+
+    - name: Load Msr kernel module
+      ansible.builtin.modprobe:
+        name: msr
+      when: is_amd_zen
+
+    - name: Execute Zenbleed patch
+      ansible.builtin.shell: "wrmsr -a 0xc0011029 $((rdmsr_val | (1<<9)))"
+      args:
+        executable: /bin/bash
+      when: is_amd_zen
