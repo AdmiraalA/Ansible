@@ -18,15 +18,15 @@
     api_password: "your_api_password"
 
   tasks:
-    - name: Set hostname
-      command: >
-        curl -u "{{ api_username }}:{{ api_password }}" -X POST -d '{"hostname": "pfsense.evilness.nl"}'
-        http://localhost/api/v1/system/hostname
-
     - name: Install required packages
       pkg:
         name: "curl,strongswan,zabbix-proxy64"
         state: present
+
+    - name: Set hostname
+      command: >
+        curl -u "{{ api_username }}:{{ api_password }}" -X POST -d '{"hostname": "pfsense.evilness.nl"}'
+        http://localhost/api/v1/system/hostname
 
     - name: Set WAN interface to PPPoE with IPv6 support
       command: >
