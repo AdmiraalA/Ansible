@@ -20,7 +20,7 @@
   tasks:
     - name: Install required packages
       pkg:
-        name: "curl,strongswan,zabbix-proxy64"
+        name: "curl,strongswan,os-zabbix64-proxy,os-zabbix64-agent"
         state: present
 
     - name: Set hostname
