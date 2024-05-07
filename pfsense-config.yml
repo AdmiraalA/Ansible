@@ -19,7 +19,7 @@
 
     - name: Print result
       debug:
-        msg: "The system is running {{ 'pfSense' if pfsense_platform_check.stat.exists else 'OPNsense' if opnsense_platform_check.rc == 0 else 'Unknown' }}"
+        msg: "The system is running {{ 'pfSense' if pfsense_platform_check.stat.exists else 'OPNsense' if opnsense_platform_check.stat.exists else 'Unknown' }}"
 
     - name: Update packages on FreeBSD
       when: pfsense_platform_check.stat.exists'
@@ -40,7 +40,7 @@
       puzzle.opnsense.system_settings_general:
         hostname: "opnsense"
         domain: mycorp.com
-      when: opnsense_platform_check.rc == 0
+      when: opnsense_platform_check.stat.exists
 
     - name: Set hostname and domain on pfSense
       pfsensible.core.pfsense_setup:
