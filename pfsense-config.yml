@@ -7,21 +7,6 @@
     ansible_python_interpreter: /usr/local/bin/python3.11  # Adjust the path as needed
   
   tasks:
-    - name: Update packages on FreeBSD
-      when: ansible_facts['os_family'] == 'FreeBSD'
-      pkgng:
-        name: '*'
-        state: latest
-
-    - name: Install required packages on FreeBSD
-      when: ansible_facts['os_family'] == 'FreeBSD'
-      pkgng:
-        name:
-          - pfSense-pkg-zabbix-agent64
-          - pfSense-pkg-zabbix-proxy64
-          - pfSense-pkg-Service_Watchdog
-        state: present
-
     - name: Check if opnsense-version command exists
       shell: opnsense-version
       ignore_errors: yes
@@ -35,6 +20,21 @@
     - name: Print result
       debug:
         msg: "The system is running {{ 'pfSense' if pfsense_platform_check.stat.exists else 'OPNsense' if opnsense_platform_check.rc == 0 else 'Unknown' }}"
+
+    - name: Update packages on FreeBSD
+      when: pfsense_platform_check.stat.exists'
+      pkgng:
+        name: '*'
+        state: latest
+
+    - name: Install required packages on FreeBSD
+      when: pfsense_platform_check.stat.exists
+      pkgng:
+        name:
+          - pfSense-pkg-zabbix-agent64
+          - pfSense-pkg-zabbix-proxy64
+          - pfSense-pkg-Service_Watchdog
+        state: present    
 
     - name: Set hostname and domain on OPNsense
       puzzle.opnsense.system_settings_general:
