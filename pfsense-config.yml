@@ -1,5 +1,5 @@
 ---
-- name: "Configure Pfsense"
+- name: "Configure Pfsense/Opnsense"
   become: yes
   hosts: all
   
