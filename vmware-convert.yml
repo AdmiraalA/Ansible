@@ -1,0 +1,55 @@
+---
+- name: Backup and convert .vmx files to .qcow2
+  hosts: localhost
+  vars_prompt:
+    - name: vmx_directory
+      prompt: "Enter the directory path containing .vmx files:"
+      private: no
+    - name: proxmox_storage
+      prompt: "Enter the Proxmox storage name:"
+      private: no
+
+  tasks:
+    - name: Find .vmx files
+      find:
+        paths: "{{ vmx_directory }}"
+        patterns: "*.vmx"
+      register: vmx_files
+
+    - name: Backup .vmx files
+      copy:
+        src: "{{ item.path }}"
+        dest: "{{ item.path }}.bak"
+      with_items: "{{ vmx_files.files }}"
+      when: item.path is defined
+
+    - name: Convert .vmx.bak files to .qcow2
+      command: "qemu-img convert -f vmdk -O qcow2 {{ item.path }} {{ item.path | regex_replace('\\.vmx\\.bak$', '.qcow2') }}"
+      with_items: "{{ vmx_files.files }}"
+      when: item.path is defined and item.path.endswith('.vmx.bak')
+
+    - name: Generate random vmid
+      set_fact:
+        vmid: "{{ 9900 | random(start=9901, end=9999) }}"
+
+    - name: Convert .vmx to Proxmox configuration
+      copy:
+        content: |
+          agent: 1
+          balloon: 0
+          bios: ovmf
+          boot: order=sata0,cdrom,hdd
+          cores: "{{ ansible_processor_cores }}"
+          ide2: none,media=cdrom
+          memory: "{{ ansible_memtotal_mb }}"
+          name: "{{ vmx_file | basename | regex_replace('\\.vmx$', '') }}"
+          net0: virtio={{ hostvars['localhost']['ansible_default_ipv4']['address'] }},bridge=vmbr0
+          numa: 0
+          ostype: win10
+          sata0: "{{ proxmox_storage }}:{{ vmid }}.qcow2"
+          scsihw: virtio-scsi-pci
+          sockets: 1
+          vmid: "{{ vmid }}"
+        dest: "/etc/pve/qemu-server/{{ vmid }}.conf"
+      loop: "{{ vmx_files.files }}"
+      when: item.path is defined and item.path.endswith('.qcow2')
