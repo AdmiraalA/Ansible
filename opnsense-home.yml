@@ -1,11 +1,102 @@
 ---
 - name: Configure Opnsense for KPN Fibre and IP-TV
-  hosts: opnsense
+  hosts: "{{ opnsense_host }}"
   gather_facts: no
   become: yes
 
+  vars:
+    opnsense_ssh_password: "your_ssh_password"
+
   tasks:
     - name: Install os-igmp-proxy if not present
-      pkgng:
-        name: os-igmp-proxy
+      puzzle.opnsense.opn_package:
         state: present
+        name: os-igmp-proxy
+        password: "{{ opnsense_ssh_password }}"
+
+    - name: Create WAN interface with PPPoE for KPN
+      puzzle.opnsense.opn_interface_pppoe:
+        state: present
+        interface: WAN
+        username: internet
+        password: kpn
+        description: "WAN"
+        enable: yes
+        password: "{{ opnsense_ssh_password }}"
+
+    - name: Create LAN interface
+      puzzle.opnsense.opn_interface:
+        state: present
+        interface: LAN
+        ipaddr: 192.168.2.1
+        subnet: 24
+        description: "LAN Interface"
+        enable: yes
+        password: "{{ opnsense_ssh_password }}"
+
+    - name: Create VLAN for INTERNET
+      puzzle.opnsense.opn_interface_vlan:
+        state: present
+        parent_interface: WAN
+        vlan_tag: 6
+        description: "VLAN_INTERNET"
+        enable: yes
+        password: "{{ opnsense_ssh_password }}"
+
+    - name: Create VLAN for IPTV
+      puzzle.opnsense.opn_interface_vlan:
+        state: present
+        parent_interface: WAN
+        vlan_tag: 4
+        description: "VLAN_IPTV"
+        enable: yes
+        password: "{{ opnsense_ssh_password }}"
+
+    - name: Configure firewall rules
+      puzzle.opnsense.opn_firewall_rule:
+        state: present
+        interface: LAN
+        direction: in
+        tcpip_version: ipv4
+        protocol: igmp
+        source: any
+        destination: any
+        enable: yes
+        password: "{{ opnsense_ssh_password }}"
+
+    - name: Add outbound NAT rule
+      puzzle.opnsense.opn_nat_outbound:
+        state: hybrid
+        password: "{{ opnsense_ssh_password }}"
+
+    - name: Add manual outbound NAT rule
+      puzzle.opnsense.opn_nat_outbound_rule:
+        state: present
+        interface: WAN_IPTV
+        tcpip_version: ipv4
+        protocol: any
+        source_address: LAN net
+        destination: 213.75.112.0/21
+        password: "{{ opnsense_ssh_password }}"
+
+    - name: Configure IGMP Proxy
+      puzzle.opnsense.opn_firewall_igmp_proxy:
+        state: present
+        upstream_interface: WAN_IPTV
+        upstream_networks:
+          - 0.0.0.0/1
+          - 128.0.0.0/1
+        downstream_interface: LAN
+        downstream_networks:
+          - 192.168.2.0/24
+        password: "{{ opnsense_ssh_password }}"
+
+    - name: Enable DHCP server on LAN interface
+      puzzle.opnsense.opn_dhcp_server:
+        state: present
+        interface: LAN
+        range_from: 192.168.2.100
+        range_to: 192.168.2.200
+        gateway: 192.168.2.1
+        enable: yes
+        password: "{{ opnsense_ssh_password }}"
