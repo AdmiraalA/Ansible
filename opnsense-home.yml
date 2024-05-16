@@ -1,1 +1,11 @@
 ---
+- name: Configure Opnsense for KPN Fibre and IP-TV
+  hosts: opnsense
+  gather_facts: no
+  become: yes
+
+  tasks:
+    - name: Install os-igmp-proxy if not present
+      pkgng:
+        name: os-igmp-proxy
+        state: present
