@@ -4,11 +4,12 @@
   become: yes
 
   tasks:
-    - name: Update packages on Red Hat-alike systems
+      - name: Update packages on Red Hat-alike systems
       when: ansible_facts['os_family'] == 'RedHat' or ansible_facts['os_family'] == 'AlmaLinux' or ansible_facts['os_family'] == 'Rocky Linux' or ansible_facts['os_family'] == 'Oracle Linux'
       dnf:
         name: '*'
         state: latest
+      register: redhat_updates
 
     - name: Update packages on Debian/Ubuntu-based systems
       when: ansible_facts['os_family'] == 'Debian' or ansible_facts['os_family'] == 'Ubuntu'
@@ -17,12 +18,34 @@
         update_cache: yes
         autoremove: yes
         autoclean: yes
+      register: debian_updates
 
     - name: Update packages on FreeBSD
       when: ansible_facts['os_family'] == 'FreeBSD'
       pkgng:
         name: '*'
         state: latest
+      register: freebsd_updates
+
+    - name: Display update information
+      debug:
+        msg: |
+          Updates on {{ ansible_hostname }}:
+          {% if redhat_updates.changed %}
+          Red Hat-alike systems:
+          Number of updates: {{ redhat_updates.changed | length }}
+          Updated packages: {{ redhat_updates.package_list | join(', ') }}
+          {% endif %}
+          {% if debian_updates.changed %}
+          Debian/Ubuntu-based systems:
+          Number of updates: {{ debian_updates.changed | length }}
+          Updated packages: {{ debian_updates.package_list | join(', ') }}
+          {% endif %}
+          {% if freebsd_updates.changed %}
+          FreeBSD:
+          Number of updates: {{ freebsd_updates.changed | length }}
+          Updated packages: {{ freebsd_updates.package_list | join(', ') }}
+          {% endif %}
 
     - name: Install multiple packages on FreeBSD
       when: ansible_facts['os_family'] == 'FreeBSD'
