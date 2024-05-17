@@ -1,0 +1,108 @@
+---
+- name: Manage FusionPBX time schedules
+  hosts: fusionpbx
+  become: yes
+  vars_prompt:
+    - name: "set_original_schedule"
+      prompt: "Set original schedule? (yes/no)"
+      private: no
+
+    - name: "tenant_domain"
+      prompt: "Please select the tenant domain"
+      private: no
+      choices:
+        - tenant1.yourdomain.com
+        - tenant2.yourdomain.com
+        - tenant3.yourdomain.com
+
+  vars:
+    fusionpbx_admin_user: "admin"
+    fusionpbx_admin_password: "your_password"
+    backup_file: "/tmp/fusionpbx_{{ tenant_domain }}_time_conditions_backup.json"
+    restore_backup: "{{ set_original_schedule == 'yes' }}"
+
+  tasks:
+    - name: Install required packages
+      apt:
+        name:
+          - curl
+          - jq
+        state: present
+      when: ansible_os_family == "Debian"
+
+    - name: Fetch CSRF token for domain selection
+      uri:
+        url: "http://{{ inventory_hostname }}/core/domain_settings/domains.php"
+        method: GET
+        user: "{{ fusionpbx_admin_user }}"
+        password: "{{ fusionpbx_admin_password }}"
+        force_basic_auth: yes
+      register: domain_page
+
+    - name: Parse CSRF token
+      set_fact:
+        csrf_token: "{{ domain_page.content | regex_search('name=\"csrf_token\" value=\"([^\"]+)\"', '\\1') }}"
+
+    - name: Select tenant/domain
+      uri:
+        url: "http://{{ inventory_hostname }}/core/domain_settings/domains.php"
+        method: POST
+        user: "{{ fusionpbx_admin_user }}"
+        password: "{{ fusionpbx_admin_password }}"
+        force_basic_auth: yes
+        headers:
+          Content-Type: "application/x-www-form-urlencoded"
+        body: "csrf_token={{ csrf_token }}&domain_uuid={{ tenant_domain }}"
+        status_code: 302
+
+    - name: Fetch current time conditions
+      uri:
+        url: "http://{{ inventory_hostname }}/app/time_conditions/time_conditions.php"
+        method: GET
+        user: "{{ fusionpbx_admin_user }}"
+        password: "{{ fusionpbx_admin_password }}"
+        force_basic_auth: yes
+      register: time_conditions
+
+    - name: Backup current time conditions
+      copy:
+        content: "{{ time_conditions.content }}"
+        dest: "{{ backup_file }}"
+      when: not restore_backup
+
+    - name: Read backup file
+      slurp:
+        src: "{{ backup_file }}"
+      register: backup_content
+      when: restore_backup
+
+    - name: Restore time conditions from backup
+      uri:
+        url: "http://{{ inventory_hostname }}/app/time_conditions/time_conditions.php"
+        method: POST
+        user: "{{ fusionpbx_admin_user }}"
+        password: "{{ fusionpbx_admin_password }}"
+        force_basic_auth: yes
+        headers:
+          Content-Type: "application/x-www-form-urlencoded"
+        body: "{{ backup_content.content | b64decode }}"
+        status_code: 302
+      when: restore_backup
+
+    - name: Update time conditions
+      uri:
+        url: "http://{{ inventory_hostname }}/app/time_conditions/time_conditions.php"
+        method: POST
+        user: "{{ fusionpbx_admin_user }}"
+        password: "{{ fusionpbx_admin_password }}"
+        force_basic_auth: yes
+        headers:
+          Content-Type: "application/x-www-form-urlencoded"
+        body: "csrf_token={{ csrf_token }}&time_conditions_uuid=new_uuid&condition_details=New Condition&condition_start=09:00&condition_end=17:00"
+        status_code: 302
+      when: not restore_backup
+
+    - name: Restart FusionPBX service
+      service:
+        name: fusionpbx
+        state: restarted
