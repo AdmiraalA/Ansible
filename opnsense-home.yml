@@ -4,7 +4,7 @@
   gather_facts: no
   vars:
     opnsense_host: "https://opnsense.localdomain"  # Replace with your OPNSense URL
-    api_credentials: "{{ lookup('file', './opnsense_api_credentials.txt') }}"
+    api_credentials: "{{ lookup('file', './api.ini') }}"
     api_key: "{{ api_credentials.split()[1] }}"
     api_secret: "{{ api_credentials.split()[2] }}"
     kpn_itv_alias: "KPN_iTV_Hosts"
@@ -170,7 +170,7 @@
         api_secret: "{{ api_secret }}"
         interface: vlan4
         protocol: any
-        source_net: "{{ iot_net }}"
+        source_net: "192.168.2.0/24"
         destination_net: "{{ kpn_itv_alias }}"
         target: "interface_address"
         description: "NAT rule for KPN iTV"
