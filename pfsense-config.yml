@@ -8,13 +8,11 @@
   
   tasks:
     - name: Update packages on FreeBSD
-      when: pfsense_platform_check.stat.exists'
       pkgng:
         name: '*'
         state: latest
 
     - name: Install required packages on FreeBSD
-      when: pfsense_platform_check.stat.exists
       pkgng:
         name:
           - pfSense-pkg-zabbix-agent64
