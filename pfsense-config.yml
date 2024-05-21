@@ -12,7 +12,7 @@
         path: /etc/platform
       register: pfsense_platform_check
 
-    - name: Print result
+  #  - name: Print result
   #    debug:
   #      msg: "The system is running {{ 'pfSense' if pfsense_platform_check.stat.exists else 'OPNsense' if opnsense_platform_check.stat.exists else 'Unknown' }}"
 
