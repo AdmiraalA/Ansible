@@ -33,13 +33,14 @@
         type: host
         detail: "akart||blaat"
         state: present
-      
+
+ 
     - name: Allow RDP from LAN to gateway
       pfsensible.core.pfsense_rule:
         name: Allow RDP from LAN to gateways
         interface: LAN
         action: pass
-        source: "remote_mgmt_net"
+        source: NET:remote_mgmt
         destination: "any"
         destination_port: "3389"
         protocol: tcp
