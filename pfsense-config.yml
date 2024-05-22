@@ -34,18 +34,51 @@
         detail: "akart||blaat"
         state: present
 
- ### WAN network
-    - name: Allow HTTPS/HTTPS in VPN
+    ### WAN network
+    - name: Allow HTTP in VPN
       pfsensible.core.pfsense_rule:
-        name: Allow HTTPS/HTTPS in VPN
+        name: Allow HTTP in VPN
+        interface: WAN
+        action: pass
+        ipprotocol: inet
+        protocol: tcp
+        source: any
+        destination: "10.0.20.10"
+        destination_port: "80"
+        state: present
+   
+    - name: Allow HTTPS in VPN
+      pfsensible.core.pfsense_rule:
+        name: Allow HTTPS in VPN
+        interface: WAN
+        action: pass
+        ipprotocol: inet
+        protocol: tcp
+        source: any
+        destination: "10.0.20.10"
+        destination_port: "443"
+        state: present
+        
+    - name: Allow RDP in for OpenVPN
+      pfsensible.core.pfsense_rule:
+        name: Allow RDP in for OpenVPN
         interface: WAN
         action: pass
         ipprotocol: inet
         protocol: tcp
         source: remote_mgmt
         destination: "10.0.20.10"
-        destination_port: "80,443"
+        destination_port: "3389"
         state: present
-   
-   
- 
+
+    - name: Allow UDP in for OpenVPN
+      pfsensible.core.pfsense_rule:
+        name: Allow UDP in for OpenVPN
+        interface: WAN
+        action: pass
+        ipprotocol: inet
+        protocol: udp
+        source: any
+        destination: any
+        destination_port: "1195"
+        state: present
