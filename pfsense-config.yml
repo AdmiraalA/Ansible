@@ -93,5 +93,4 @@
         protocol: udp
         source: any
         destination: any
-        destination_port: any
         state: present
