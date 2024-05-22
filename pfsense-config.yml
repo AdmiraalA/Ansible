@@ -44,7 +44,7 @@
         protocol: tcp
         source: remote_mgmt
         destination: "10.0.20.10"
-        destination_port: "80 443"
+        destination_port: "80,443"
         state: present
    
    
