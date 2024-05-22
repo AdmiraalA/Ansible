@@ -83,8 +83,8 @@
         destination_port: "1195"
         state: present
        
-       ## Allow VPN Traffic
-   - name: Allow UDP in for OpenVPN
+    ## Allow VPN Traffic
+    - name: Allow UDP in for OpenVPN
       pfsensible.core.pfsense_rule:
         name: Allow UDP in and out for OpenVPN
         interface: OpenVPN
