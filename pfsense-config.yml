@@ -84,7 +84,7 @@
         state: present
        
     ## Allow VPN Traffic
-    - name: Allow UDP in for OpenVPN
+    - name: Allow UDP in/out for OpenVPN
       pfsensible.core.pfsense_rule:
         name: Allow UDP in and out for OpenVPN
         interface: opt1
