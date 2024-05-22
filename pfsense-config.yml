@@ -34,15 +34,17 @@
         detail: "akart||blaat"
         state: present
 
- 
+ ### WAN network
     - name: Allow RDP from LAN to gateway
       pfsensible.core.pfsense_rule:
-        name: Allow RDP from LAN to gateways
-        interface: LAN
+        name: Allow RDP from WAN to gateways
+        interface: WAN
         action: pass
         source: remote_mgmt
         destination: "any"
         destination_port: "3389"
         protocol: tcp
         state: present
+   
+   
  
