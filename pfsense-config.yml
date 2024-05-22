@@ -39,7 +39,7 @@
         name: Allow RDP from LAN to gateways
         interface: LAN
         action: pass
-        source: "LAN net"
+        source: "remote_mgmt_net"
         destination: "any"
         destination_port: "3389"
         protocol: tcp
