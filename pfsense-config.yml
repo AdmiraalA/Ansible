@@ -42,7 +42,6 @@
         source: "LAN net"
         destination: "any"
         destination_port: "3389"
-        descr: "Allow RDP from Lan to gateway"
         protocol: tcp
         state: present
  
