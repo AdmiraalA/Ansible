@@ -35,15 +35,16 @@
         state: present
 
  ### WAN network
-    - name: Allow RDP from LAN to gateway
+    - name: Allow HTTPS/HTTPS in VPN
       pfsensible.core.pfsense_rule:
-        name: Allow RDP from WAN to gateways
+        name: Allow HTTPS/HTTPS in VPN
         interface: WAN
         action: pass
-        source: remote_mgmt
-        destination: "any"
-        destination_port: "3389"
+        ipprotocol: ipv4
         protocol: tcp
+        source: remote_mgmt
+        destination: "10.0.20.10"
+        destination_port: "80 443"
         state: present
    
    
