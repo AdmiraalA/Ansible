@@ -24,3 +24,22 @@
       pfsensible.core.pfsense_setup:
         hostname: "Ikrouter"
         domain: "me.kapot"
+    - name: Add remote_mgmt alias in pfSense with host descriptions
+      pfsensible.core.pfsense_alias:
+      name: remote_mgmt
+      address: "1.2.3.4 5.6.7.8"
+      descr: "Alias for remote management IPs"
+      type: host
+      detail: "akart||blaat"
+      state: present
+      
+    - name: Allow RDP from LAN to gateway
+      pfsensible.core.pfsense_rule:
+        name: Allow RDP from LAN to gateways
+        interface: LAN
+        action: pass
+        source: LAN net
+        destination: *
+        destination_port: 3389
+        protocol: tcp
+ 
