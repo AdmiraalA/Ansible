@@ -40,7 +40,7 @@
         name: Allow HTTPS/HTTPS in VPN
         interface: WAN
         action: pass
-        ipprotocol: ipv4
+        ipprotocol: inet
         protocol: tcp
         source: remote_mgmt
         destination: "10.0.20.10"
