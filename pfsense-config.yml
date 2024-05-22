@@ -87,7 +87,7 @@
     - name: Allow UDP in for OpenVPN
       pfsensible.core.pfsense_rule:
         name: Allow UDP in and out for OpenVPN
-        interface: ovpns1
+        interface: opt1
         action: pass
         ipprotocol: inet46
         protocol: udp
