@@ -40,7 +40,7 @@
         interface: LAN
         action: pass
         source: LAN net
-        destination: *
+        destination: any
         destination_port: 3389
         protocol: tcp
  
