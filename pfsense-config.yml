@@ -22,8 +22,8 @@
 
     - name: Set hostname and domain on pfSense
       pfsensible.core.pfsense_setup:
-        hostname: "Ikrouter"
-        domain: "me.kapot"
+        hostname: "pfsense"
+        domain: "domain.arpa"
         
     - name: Add remote_mgmt alias in pfSense with host descriptions
       pfsensible.core.pfsense_alias:
@@ -83,14 +83,4 @@
         destination_port: "1195"
         state: present
        
-    ## Allow VPN Traffic
-    - name: Allow UDP in/out for OpenVPN
-      pfsensible.core.pfsense_rule:
-        name: Allow UDP in and out for OpenVPN
-        interface: opt1
-        action: pass
-        ipprotocol: inet46
-        protocol: udp
-        source: any
-        destination: any
-        state: present
+
