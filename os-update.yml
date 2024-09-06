@@ -1,8 +1,8 @@
 ---
 - name: Update and restart services on Linux and FreeBSD boxes
   hosts: all
-  become: yes
-  remote_user: ansible
+  #become: yes
+  #remote_user: ansible
 
   tasks:
     - name: Update packages on Red Hat-alike systems
