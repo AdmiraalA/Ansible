@@ -1,6 +1,8 @@
 ---
 - name: Update and restart services on Linux and FreeBSD boxes
   hosts: all
+  become: yes
+  become_method: su
 
   tasks:
     - name: Update packages on Red Hat-alike systems
