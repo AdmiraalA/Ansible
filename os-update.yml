@@ -3,10 +3,6 @@
   hosts: all
 
   tasks:
-    - name: Show whoami result
-      debug:
-        var: whoami_result.stdout
-
     - name: Update packages on Red Hat-alike systems
       when: ansible_facts['os_family'] in ['RedHat', 'AlmaLinux', 'Rocky', 'OracleLinux']
       dnf:
