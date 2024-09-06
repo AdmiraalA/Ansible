@@ -3,6 +3,7 @@
   hosts: all
   become: yes
   become_method: sudo
+  remote_user: ansible
 
   tasks:
     - name: Update packages on Red Hat-alike systems
