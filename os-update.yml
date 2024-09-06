@@ -3,9 +3,18 @@
   hosts: all
   become_user: root
   become: yes
-  #remote_user: ansible
 
   tasks:
+    - name: Test become functionality
+      command: whoami
+      become: yes
+      become_user: root
+      register: whoami_result
+
+    - name: Show whoami result
+      debug:
+        var: whoami_result.stdout
+
     - name: Update packages on Red Hat-alike systems
       when: ansible_facts['os_family'] in ['RedHat', 'AlmaLinux', 'Rocky', 'OracleLinux']
       dnf:
