@@ -3,12 +3,6 @@
   hosts: all
 
   tasks:
-    - name: Test become functionality
-      command: whoami
-      become: yes
-      become_user: root
-      register: whoami_result
-
     - name: Show whoami result
       debug:
         var: whoami_result.stdout
