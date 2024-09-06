@@ -4,15 +4,15 @@
   become: yes
 
   tasks:
-      - name: Update packages on Red Hat-alike systems
-      when: ansible_facts['os_family'] == 'RedHat' or ansible_facts['os_family'] == 'AlmaLinux' or ansible_facts['os_family'] == 'Rocky Linux' or ansible_facts['os_family'] == 'Oracle Linux'
+    - name: Update packages on Red Hat-alike systems
+      when: ansible_facts['os_family'] in ['RedHat', 'AlmaLinux', 'Rocky', 'OracleLinux']
       dnf:
         name: '*'
         state: latest
       register: redhat_updates
 
     - name: Update packages on Debian/Ubuntu-based systems
-      when: ansible_facts['os_family'] == 'Debian' or ansible_facts['os_family'] == 'Ubuntu'
+      when: ansible_facts['os_family'] == 'Debian'
       apt:
         upgrade: dist
         update_cache: yes
@@ -46,12 +46,3 @@
           Number of updates: {{ freebsd_updates.changed | length }}
           Updated packages: {{ freebsd_updates.package_list | join(', ') }}
           {% endif %}
-
-    - name: Install multiple packages on FreeBSD
-      when: ansible_facts['os_family'] == 'FreeBSD'
-      pkgng:
-        name:
-          - Service_Watchdog
-          - zabbix-agent64
-          - zabbix-proxy64
-        state: present
