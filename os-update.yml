@@ -35,16 +35,24 @@
           Updates on {{ ansible_hostname }}:
           {% if redhat_updates.changed %}
           Red Hat-alike systems:
-          Number of updates: {{ redhat_updates.changed | length }}
-          Updated packages: {{ redhat_updates.package_list | join(', ') }}
+          Number of updates: {{ redhat_updates.results | length }}
+          Updated packages: {{ redhat_updates.results | map(attribute='name') | join(', ') }}
           {% endif %}
+
           {% if debian_updates.changed %}
           Debian/Ubuntu-based systems:
-          Number of updates: {{ debian_updates.changed | length }}
-          Updated packages: {{ debian_updates.package_list | join(', ') }}
+          Number of updates: {{ debian_updates.cache_update_time }}
+          Updated packages: Packages were updated
           {% endif %}
+
           {% if freebsd_updates.changed %}
           FreeBSD:
-          Number of updates: {{ freebsd_updates.changed | length }}
-          Updated packages: {{ freebsd_updates.package_list | join(', ') }}
+          Number of updates: {{ freebsd_updates.results | length }}
+          Updated packages: {{ freebsd_updates.results | map(attribute='name') | join(', ') }}
           {% endif %}
+
+FreeBSD:
+Number of updates: {{ freebsd_updates.changed | length }}
+Updated packages: {{ freebsd_updates.package_list | join(', ') }}
+{% endif %}
+
