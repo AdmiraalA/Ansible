@@ -50,9 +50,3 @@
           Number of updates: {{ freebsd_updates.results | length }}
           Updated packages: {{ freebsd_updates.results | map(attribute='name') | join(', ') }}
           {% endif %}
-
-FreeBSD:
-Number of updates: {{ freebsd_updates.changed | length }}
-Updated packages: {{ freebsd_updates.package_list | join(', ') }}
-{% endif %}
-
