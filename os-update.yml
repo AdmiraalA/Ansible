@@ -34,31 +34,24 @@
         msg: |
           Updates on {{ ansible_hostname }}:
           {% if ansible_facts['os_family'] in ['RedHat', 'AlmaLinux', 'Rocky', 'OracleLinux'] %}
-          Red Hat-alike systems:
-          {% if redhat_updates.changed %}
-          Number of updates: {{ redhat_updates.results | length }}
-          Updated packages: {{ redhat_updates.results | map(attribute='name') | join(', ') }}
-          {% else %}
-          No updates available.
-          {% endif %}
-          {% endif %}
-
-          {% if ansible_facts['os_family'] == 'Debian' %}
-          Debian/Ubuntu-based systems:
-          {% if debian_updates.changed %}
-          Number of updates: {{ debian_updates.upgraded_packages | length }}
-          Updated packages: {{ debian_updates.upgraded_packages | join(', ') }}
-          {% else %}
-          No updates available.
-          {% endif %}
-          {% endif %}
-
-          {% if ansible_facts['os_family'] == 'FreeBSD' %}
-          FreeBSD:
-          {% if freebsd_updates.changed %}
-          Number of updates: {{ freebsd_updates.results | length }}
-          Updated packages: {{ freebsd_updates.results | map(attribute='name') | join(', ') }}
-          {% else %}
-          No updates available.
-          {% endif %}
+            {% if redhat_updates.changed %}
+            Number of updates: {{ redhat_updates.results | length }}
+            Updated packages: {{ redhat_updates.results | map(attribute='name') | join(', ') }}
+            {% else %}
+            No updates available.
+            {% endif %}
+          {% elif ansible_facts['os_family'] == 'Debian' %}
+            {% if debian_updates.changed %}
+            Number of updates: {{ debian_updates.upgraded_packages | length }}
+            Updated packages: {{ debian_updates.upgraded_packages | join(', ') }}
+            {% else %}
+            No updates available.
+            {% endif %}
+          {% elif ansible_facts['os_family'] == 'FreeBSD' %}
+            {% if freebsd_updates.changed %}
+            Number of updates: {{ freebsd_updates.results | length }}
+            Updated packages: {{ freebsd_updates.results | map(attribute='name') | join(', ') }}
+            {% else %}
+            No updates available.
+            {% endif %}
           {% endif %}
