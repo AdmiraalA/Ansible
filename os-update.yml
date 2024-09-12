@@ -41,8 +41,8 @@
 
           {% if debian_updates.changed %}
           Debian/Ubuntu-based systems:
-          Number of updates: {{ debian_updates.cache_update_time }}
-          Updated packages: Packages were updated
+          Number of updates: {{ debian_updates.upgraded_packages | length }}
+          Updated packages: {{ debian_updates.upgraded_packages | join(', ') }}
           {% endif %}
 
           {% if freebsd_updates.changed %}
