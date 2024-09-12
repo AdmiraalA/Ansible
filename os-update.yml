@@ -37,16 +37,25 @@
           Red Hat-alike systems:
           Number of updates: {{ redhat_updates.results | length }}
           Updated packages: {{ redhat_updates.results | map(attribute='name') | join(', ') }}
+          {% else %}
+          Red Hat-alike systems:
+          No updates available.
           {% endif %}
 
           {% if debian_updates.changed %}
           Debian/Ubuntu-based systems:
           Number of updates: {{ debian_updates.upgraded_packages | length }}
           Updated packages: {{ debian_updates.upgraded_packages | join(', ') }}
+          {% else %}
+          Debian/Ubuntu-based systems:
+          No updates available.
           {% endif %}
 
           {% if freebsd_updates.changed %}
           FreeBSD:
           Number of updates: {{ freebsd_updates.results | length }}
           Updated packages: {{ freebsd_updates.results | map(attribute='name') | join(', ') }}
+          {% else %}
+          FreeBSD:
+          No updates available.
           {% endif %}
