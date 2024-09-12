@@ -33,29 +33,32 @@
       debug:
         msg: |
           Updates on {{ ansible_hostname }}:
-          {% if redhat_updates.changed %}
+          {% if ansible_facts['os_family'] in ['RedHat', 'AlmaLinux', 'Rocky', 'OracleLinux'] %}
           Red Hat-alike systems:
+          {% if redhat_updates.changed %}
           Number of updates: {{ redhat_updates.results | length }}
           Updated packages: {{ redhat_updates.results | map(attribute='name') | join(', ') }}
           {% else %}
-          Red Hat-alike systems:
           No updates available.
           {% endif %}
+          {% endif %}
 
-          {% if debian_updates.changed %}
+          {% if ansible_facts['os_family'] == 'Debian' %}
           Debian/Ubuntu-based systems:
+          {% if debian_updates.changed %}
           Number of updates: {{ debian_updates.upgraded_packages | length }}
           Updated packages: {{ debian_updates.upgraded_packages | join(', ') }}
           {% else %}
-          Debian/Ubuntu-based systems:
           No updates available.
           {% endif %}
+          {% endif %}
 
-          {% if freebsd_updates.changed %}
+          {% if ansible_facts['os_family'] == 'FreeBSD' %}
           FreeBSD:
+          {% if freebsd_updates.changed %}
           Number of updates: {{ freebsd_updates.results | length }}
           Updated packages: {{ freebsd_updates.results | map(attribute='name') | join(', ') }}
           {% else %}
-          FreeBSD:
           No updates available.
+          {% endif %}
           {% endif %}
