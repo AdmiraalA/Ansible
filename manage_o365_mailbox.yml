@@ -13,6 +13,6 @@
   tasks:
     - name: Run PowerShell script to manage Office 365 mailbox
       ansible.builtin.shell: |
-        pwsh /path/to/manage_o365_mailbox.ps1 -emailaccount '{{ emailaccount }}' -disable_login '{{ disable_login }}' -convert_to_shared '{{ convert_to_shared }}' -disassociate_licenses '{{ disassociate_licenses }}' -grant_access '{{ grant_access }}' -access_username '{{ access_username }}'
+        pwsh ./manage_o365_mailbox.ps1 -emailaccount '{{ emailaccount }}' -disable_login '{{ disable_login }}' -convert_to_shared '{{ convert_to_shared }}' -disassociate_licenses '{{ disassociate_licenses }}' -grant_access '{{ grant_access }}' -access_username '{{ access_username }}'
       args:
         executable: /usr/bin/pwsh
